@@ -29,16 +29,15 @@ how many servers use it, how much they answer and whether the service is healthy
 
 The public [dashboard](https://github.com/happyx-app/HappyX.Web) shows each server's admins their
 own server. This one is for the person who hosts HappyX and sees **every server, but only as
-counts**: never a mood, a message, a member's name or anything else members wrote. The interface is
-in Spanish.
+counts**: never a mood, a message, a member's name or anything else members wrote.
 
-- **Resumen**: the bot, the API, failed DMs and the latest backup at a glance; active and idle
+- **Overview**: the bot, the API, failed DMs and the latest backup at a glance; active and idle
   servers, the response rate, active people, answers per day, the weekly response rate, servers
   joining and leaving, and the servers that need a look (idle, about to be deleted, losing DMs).
-- **Servidores**: every server with its members, active people, response rate and state, to
+- **Servers**: every server with its members, active people, response rate and state, to
   filter, search and sort; each one opens a page with its weekly answers and its settings.
-- **Salud**: API latency per hour, failed DMs per day, the database and the latest backups.
-- **Configuración**: how the servers have set HappyX up (language, timezone, survey hour,
+- **Health**: API latency per hour, failed DMs per day, the database and the latest backups.
+- **Settings**: how the servers have set HappyX up (language, timezone, survey hour,
   anonymity, report, roles, extras), to choose good defaults.
 
 TypeScript without a framework, built with Vite, with the same look and hand-drawn SVG charts as
@@ -94,7 +93,7 @@ Vite forwards `/api/admin` to `API_URL` with the key, like nginx does in product
 
 ```
 src/main.ts        shell: top bar, theme, routes in the URL fragment, loading and errors
-src/route.ts       #/, #/servidores, #/servidores/<id>, #/salud, #/configuracion
+src/route.ts       #/, #/servers, #/servers/<id>, #/health, #/settings
 src/api.ts         the admin API's types and calls
 src/pages/         one file per page
 src/charts.ts      bar, line and joins/leaves charts, sparklines, table views, distributions

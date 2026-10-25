@@ -5,7 +5,7 @@ import { dateLong, dayLong, dayShort, fmt, guildRate, languageName, pctOrDash, r
 import { icon } from '../icons'
 import { card, guildBadge, kpi, pill, statList, statusPill, unit } from '../ui'
 
-const roles: Record<RolesMode, string> = { all: 'Todos', except: 'Excepto unos roles', only: 'Solo unos roles' }
+const roles: Record<RolesMode, string> = { all: 'Everyone', except: 'All but some roles', only: 'Only some roles' }
 
 export function guildPage(d: GuildDetail, back: () => void): Node[] {
   const g = d.guild
@@ -15,15 +15,15 @@ export function guildPage(d: GuildDetail, back: () => void): Node[] {
   const weeks = d.weeks.map((w) => ({
     label: dayShort(w.week),
     value: w.answers,
-    tip: tipRows(`Semana del ${dayShort(w.week)}`, [
-      [null, 'Respuestas', fmt(w.answers)],
-      [null, 'Enviadas', w.recipients ? fmt(w.recipients) : '–'],
-      [null, 'Tasa', pctOrDash(ratio(w.answered, w.recipients))],
+    tip: tipRows(`Week of ${dayShort(w.week)}`, [
+      [null, 'Answers', fmt(w.answers)],
+      [null, 'Sent', w.recipients ? fmt(w.recipients) : '–'],
+      [null, 'Rate', pctOrDash(ratio(w.answered, w.recipients))],
     ]),
   }))
 
   return [
-    h('button', { class: 'back', type: 'button', onclick: back }, icon('back', 'icon-sm'), 'Todos los servidores'),
+    h('button', { class: 'back', type: 'button', onclick: back }, icon('back', 'icon-sm'), 'All servers'),
     h(
       'div',
       { class: 'detail-head' },
@@ -35,52 +35,52 @@ export function guildPage(d: GuildDetail, back: () => void): Node[] {
       'div',
       { class: 'privacy-note' },
       icon('lock', 'icon-sm'),
-      h('span', {}, 'Aquí solo hay recuentos. Ni estados de ánimo, ni mensajes, ni nombres de miembros: eso es del servidor y lo ve su admin en la web.'),
+      h('span', {}, 'Only counts here. No moods, messages or member names: those belong to the server, and its admin sees them on the web dashboard.'),
     ),
     h(
       'div',
       { class: 'kpis' },
-      kpi('Miembros', fmt(g.members), `${fmt(g.opted_out)} pulsaron «No me preguntes más»`),
-      kpi('Activos en 7 días', g.status === 'left' ? '–' : fmt(g.active_7d), 'han respondido al menos una vez'),
-      kpi('Tasa de respuesta', rate === null ? '–' : unit(fmt(rate * 100), '%'), rate === null ? 'sin encuestas contadas esta semana' : `${fmt(g.answered_7d)} de ${fmt(g.recipients_7d)} encuestas`),
-      kpi('DMs fallidos (7 d)', fmt(g.failed_7d), g.failed_7d > 0 && g.failed_7d >= 0.2 * g.recipients_7d ? pill('critical', 'Revisar') : 'DMs cerrados o bot bloqueado'),
+      kpi('Members', fmt(g.members), `${fmt(g.opted_out)} pressed “Don't ask me again”`),
+      kpi('Active in 7 days', g.status === 'left' ? '–' : fmt(g.active_7d), 'answered at least once'),
+      kpi('Response rate', rate === null ? '–' : unit(fmt(rate * 100), '%'), rate === null ? 'no surveys counted this week' : `${fmt(g.answered_7d)} of ${fmt(g.recipients_7d)} surveys`),
+      kpi('Failed DMs (7 d)', fmt(g.failed_7d), g.failed_7d > 0 && g.failed_7d >= 0.2 * g.recipients_7d ? pill('critical', 'Check') : 'closed DMs or bot blocked'),
     ),
     h(
       'div',
       { class: 'grid-main' },
       card(
-        'Respuestas por semana',
-        `Últimas ${d.weeks.length} semanas`,
-        barChart(weeks, { label: `Respuestas por semana en ${g.name}` }),
-        tableView(['Semana', 'Enviadas', 'Respuestas', 'Tasa'], d.weeks.map((w) => [dayShort(w.week), w.recipients ? fmt(w.recipients) : '–', fmt(w.answers), pctOrDash(ratio(w.answered, w.recipients))])),
+        'Answers per week',
+        `Last ${d.weeks.length} weeks`,
+        barChart(weeks, { label: `Answers per week in ${g.name}` }),
+        tableView(['Week', 'Sent', 'Answers', 'Rate'], d.weeks.map((w) => [dayShort(w.week), w.recipients ? fmt(w.recipients) : '–', fmt(w.answers), pctOrDash(ratio(w.answered, w.recipients))])),
       ),
       card(
-        'Configuración',
+        'Settings',
         null,
         h(
           'div',
           { class: 'chips' },
-          chip('Idioma', languageName(g.language)),
-          chip('Zona', g.timezone),
-          chip('Encuesta', `${String(s.survey_hour).padStart(2, '0')}:00`),
-          chip('Días', workingDays(s.working_days)),
-          chip('Report', s.report_frequency === 'weekly' ? 'Semanal' : 'Mensual'),
-          chip('DM del report', s.report_dm ? 'Sí' : 'No'),
-          chip('Respuestas', s.anonymous ? 'Anónimas' : 'Públicas'),
-          chip('Mensaje propio', s.custom_message ? 'Sí' : 'No'),
-          chip('Roles encuesta', roles[s.survey_roles]),
-          chip('Juego', s.games_enabled ? `Activo · ${roles[s.game_roles].toLowerCase()}` : 'Apagado'),
-          chip('Canal de kudos', s.kudos_channel ? 'Sí' : 'No'),
+          chip('Language', languageName(g.language)),
+          chip('Timezone', g.timezone),
+          chip('Survey', `${String(s.survey_hour).padStart(2, '0')}:00`),
+          chip('Days', workingDays(s.working_days)),
+          chip('Report', s.report_frequency === 'weekly' ? 'Weekly' : 'Monthly'),
+          chip('Report DM', s.report_dm ? 'Yes' : 'No'),
+          chip('Answers', s.anonymous ? 'Anonymous' : 'Public'),
+          chip('Custom message', s.custom_message ? 'Yes' : 'No'),
+          chip('Survey roles', roles[s.survey_roles]),
+          chip('Game', s.games_enabled ? `On · ${roles[s.game_roles].toLowerCase()}` : 'Off'),
+          chip('Kudos channel', s.kudos_channel ? 'Yes' : 'No'),
         ),
         statList([
-          ['Alta del bot', dateLong(g.created_at)],
-          ...(g.left_at ? ([['Expulsó al bot', dateLong(g.left_at)]] as [string, string][]) : []),
-          ...(g.purge_at ? ([['Se borra el', dateLong(g.purge_at)]] as [string, string][]) : []),
-          ['Última respuesta', g.last_answer ? dayLong(g.last_answer) : '–'],
-          ['Último report enviado', d.last_report ? `periodo del ${dayLong(d.last_report)}` : '–'],
-          ['Kudos esta semana', fmt(d.kudos_7d)],
-          ['Respuestas con mensaje (30 d)', h('span', {}, pctOrDash(ratio(d.with_message_30d, d.answers_30d)), ' ', h('small', {}, `de ${fmt(d.answers_30d)}`))],
-          ['Respuestas al juego (7 d)', fmt(d.game_answers_7d)],
+          ['Bot added', dateLong(g.created_at)],
+          ...(g.left_at ? ([['Removed the bot', dateLong(g.left_at)]] as [string, string][]) : []),
+          ...(g.purge_at ? ([['Deleted on', dateLong(g.purge_at)]] as [string, string][]) : []),
+          ['Last answer', g.last_answer ? dayLong(g.last_answer) : '–'],
+          ['Last report sent', d.last_report ? `period of ${dayLong(d.last_report)}` : '–'],
+          ['Kudos this week', fmt(d.kudos_7d)],
+          ['Answers with a message (30 d)', h('span', {}, pctOrDash(ratio(d.with_message_30d, d.answers_30d)), ' ', h('small', {}, `of ${fmt(d.answers_30d)}`))],
+          ['Game answers (7 d)', fmt(d.game_answers_7d)],
         ]),
       ),
     ),

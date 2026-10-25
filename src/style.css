@@ -216,7 +216,7 @@ table.table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
 .dist-row .lbl { color: var(--ink-2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .dist-row .trk { height: 10px; background: var(--surface-2); border-radius: 5px; overflow: hidden; }
 .dist-row .fil { display: block; height: 100%; background: var(--series); border-radius: 0 4px 4px 0; }
-.dist-row .n { text-align: right; font-variant-numeric: tabular-nums; font-weight: 600; }
+.dist-row .n { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; font-weight: 600; }
 .dist-row .n small { color: var(--muted); font-weight: 500; }
 
 .backups { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 6px; }

@@ -16,63 +16,63 @@ export function overviewPage(o: Overview, hl: Health, guilds: Guild[], open: (id
 
   const rateFoot =
     rate === null
-      ? 'Se empieza a medir cuando el bot avisa de a cuántos envía'
+      ? 'Measured once the bot reports how many people it sends to'
       : prevRate === null
-        ? 'últimos 7 días'
-        : h('span', {}, h('span', { class: `delta ${rate >= prevRate ? 'up' : 'down'}` }, `${rate >= prevRate ? '+' : '−'}${fmt(Math.abs(rate - prevRate) * 100, 1)} pt`), ' vs. semana anterior')
+        ? 'last 7 days'
+        : h('span', {}, h('span', { class: `delta ${rate >= prevRate ? 'up' : 'down'}` }, `${rate >= prevRate ? '+' : '−'}${fmt(Math.abs(rate - prevRate) * 100, 1)} pt`), ' vs. previous week')
 
   const dailyBars = o.days.map((d) => ({
     label: dayShort(d.day),
     value: d.answers,
     muted: isWeekend(d.day),
     tip: tipRows(dayLong(d.day), [
-      [null, 'Respuestas', fmt(d.answers)],
-      [null, 'Encuestas enviadas', d.recipients ? fmt(d.recipients) : '–'],
-      [null, 'Con mensaje', fmt(d.with_message)],
-      [null, 'Tasa', pctOrDash(ratio(d.answered, d.recipients))],
+      [null, 'Answers', fmt(d.answers)],
+      [null, 'Surveys sent', d.recipients ? fmt(d.recipients) : '–'],
+      [null, 'With a message', fmt(d.with_message)],
+      [null, 'Rate', pctOrDash(ratio(d.answered, d.recipients))],
     ]),
   }))
 
   const items = attention(guilds, now)
-  const pillOf = { idle: pill('warning', 'Sin actividad'), left: pill('neutral', 'Expulsado'), failed: pill('critical', 'DMs fallidos') }
+  const pillOf = { idle: pill('warning', 'Idle'), left: pill('neutral', 'Removed'), failed: pill('critical', 'Failed DMs') }
 
   return [
-    pageHead('Resumen', 'Todos los servidores donde está el bot, solo con cifras agregadas.', updated),
+    pageHead('Overview', 'Every server with the bot, in aggregate numbers only.', updated),
     healthStrip(hl, { survey: o.failed_7d.survey, report: o.failed_7d.report, game: o.failed_7d.game + o.failed_7d.game_guess }, now),
     h(
       'div',
       { class: 'kpis' },
-      kpi('Servidores activos', fmt(active), h('span', {}, h('span', { class: 'delta up' }, `+${fmt(o.guilds.new_7d)}`), ` esta semana · −${fmt(o.guilds.left_7d)} bajas`), o.weeks.length > 1 ? spark(o.weeks.map((w) => w.guilds ?? 0)) : undefined),
-      kpi('Sin actividad (14 d)', fmt(o.guilds.idle), `de ${fmt(o.guilds.with_bot)} con el bot dentro · ${fmt(o.guilds.left)} expulsados`),
-      kpi('Tasa de respuesta', rate === null ? '–' : unit(fmt(rate * 100), '%'), rateFoot, weeksWithRate.filter((r) => r !== null).length > 1 ? spark(weeksWithRate.map((r) => r ?? 0)) : undefined),
-      kpi('Personas activas (7 d)', fmt(o.people.active_7d), `de ${fmt(o.people.members)} miembros`),
+      kpi('Active servers', fmt(active), h('span', {}, h('span', { class: 'delta up' }, `+${fmt(o.guilds.new_7d)}`), ` this week · −${fmt(o.guilds.left_7d)} left`), o.weeks.length > 1 ? spark(o.weeks.map((w) => w.guilds ?? 0)) : undefined),
+      kpi('Idle (14 d)', fmt(o.guilds.idle), `of ${fmt(o.guilds.with_bot)} with the bot · ${fmt(o.guilds.left)} removed it`),
+      kpi('Response rate', rate === null ? '–' : unit(fmt(rate * 100), '%'), rateFoot, weeksWithRate.filter((r) => r !== null).length > 1 ? spark(weeksWithRate.map((r) => r ?? 0)) : undefined),
+      kpi('Active people (7 d)', fmt(o.people.active_7d), `of ${fmt(o.people.members)} members`),
     ),
     h(
       'div',
       { class: 'grid-main' },
       card(
-        'Respuestas por día',
-        'Últimos 30 días · fines de semana en gris',
-        barChart(dailyBars, { label: 'Respuestas por día, últimos 30 días', height: 240 }),
+        'Answers per day',
+        'Last 30 days · weekends in grey',
+        barChart(dailyBars, { label: 'Answers per day, last 30 days', height: 240 }),
         tableView(
-          ['Día', 'Enviadas', 'Respuestas', 'Con mensaje'],
+          ['Day', 'Sent', 'Answers', 'With a message'],
           o.days.map((d) => [dayLong(d.day), d.recipients ? fmt(d.recipients) : '–', fmt(d.answers), fmt(d.with_message)]),
         ),
       ),
       card(
-        'Uso',
-        'Personas, no servidores',
+        'Usage',
+        'People, not servers',
         statList([
-          ['Activas hoy', fmt(o.people.active_today)],
-          ['Activas en 7 días', fmt(o.people.active_7d)],
-          ['Activas en 30 días', fmt(o.people.active_30d)],
-          ['Repiten (3+ días en 7)', pctOrDash(ratio(o.people.repeat_7d, o.people.active_7d))],
-          ['Respuestas con mensaje', h('span', {}, pctOrDash(ratio(o.usage.with_message_7d, o.usage.answers_7d)), ' ', h('small', {}, '(solo el número)'))],
-          ['Kudos esta semana', fmt(o.usage.kudos_7d)],
-          ['Juego activo', h('span', {}, fmt(o.usage.games_on), ' ', h('small', {}, 'servidores'))],
-          ['Respuestas al juego (7 d)', fmt(o.usage.game_answers_7d)],
-          ['Preguntas propuestas (7 d)', fmt(o.usage.proposals_7d)],
-          ['«No me preguntes más»', h('span', {}, fmt(o.people.opted_out), ' ', h('small', {}, o.people.members ? `(${pct(o.people.opted_out / o.people.members, 1)})` : ''))],
+          ['Active today', fmt(o.people.active_today)],
+          ['Active in 7 days', fmt(o.people.active_7d)],
+          ['Active in 30 days', fmt(o.people.active_30d)],
+          ['Coming back (3+ days in 7)', pctOrDash(ratio(o.people.repeat_7d, o.people.active_7d))],
+          ['Answers with a message', h('span', {}, pctOrDash(ratio(o.usage.with_message_7d, o.usage.answers_7d)), ' ', h('small', {}, '(the count only)'))],
+          ['Kudos this week', fmt(o.usage.kudos_7d)],
+          ['Game on', h('span', {}, fmt(o.usage.games_on), ' ', h('small', {}, 'servers'))],
+          ['Game answers (7 d)', fmt(o.usage.game_answers_7d)],
+          ['Proposed questions (7 d)', fmt(o.usage.proposals_7d)],
+          ["“Don't ask me again”", h('span', {}, fmt(o.people.opted_out), ' ', h('small', {}, o.people.members ? `(${pct(o.people.opted_out / o.people.members, 1)})` : ''))],
         ]),
       ),
     ),
@@ -80,49 +80,49 @@ export function overviewPage(o: Overview, hl: Health, guilds: Guild[], open: (id
       'div',
       { class: 'grid-2' },
       card(
-        'Tasa de respuesta por semana',
-        `${o.weeks.length} semanas`,
+        'Response rate per week',
+        `${o.weeks.length} weeks`,
         weeksWithRate.some((r) => r !== null)
           ? lineChart(
               o.weeks.map((w) => w.week),
-              [{ name: 'Tasa', color: 'var(--series)', values: weeksWithRate }],
+              [{ name: 'Rate', color: 'var(--series)', values: weeksWithRate }],
               {
-                label: 'Tasa de respuesta semanal',
+                label: 'Weekly response rate',
                 yMin: 0,
                 yMax: 1,
-                yFmt: (v) => `${Math.round(v * 100)} %`,
+                yFmt: (v) => `${Math.round(v * 100)}%`,
                 xTick: dayShort,
                 area: true,
-                tip: (i) => tipRows(`Semana del ${dayShort(o.weeks[i].week)}`, [['var(--series)', 'Tasa', pctOrDash(weeksWithRate[i], 1)], [null, 'Enviadas', fmt(o.weeks[i].recipients)]]),
+                tip: (i) => tipRows(`Week of ${dayShort(o.weeks[i].week)}`, [['var(--series)', 'Rate', pctOrDash(weeksWithRate[i], 1)], [null, 'Sent', fmt(o.weeks[i].recipients)]]),
               },
             )
-          : h('div', { class: 'chart-empty' }, 'Aún no hay datos: la tasa aparece cuando el bot empieza a contar a cuántos envía cada encuesta.'),
-        tableView(['Semana', 'Enviadas', 'Respondidas', 'Tasa'], o.weeks.map((w, i) => [dayShort(w.week), fmt(w.recipients), fmt(w.answered), pctOrDash(weeksWithRate[i], 1)])),
+          : h('div', { class: 'chart-empty' }, 'No data yet: the rate shows up once the bot starts counting who each survey goes to.'),
+        tableView(['Week', 'Sent', 'Answered', 'Rate'], o.weeks.map((w, i) => [dayShort(w.week), fmt(w.recipients), fmt(w.answered), pctOrDash(weeksWithRate[i], 1)])),
       ),
       card(
-        'Altas y bajas de servidores',
-        'Por semana',
+        'Servers joining and leaving',
+        'Per week',
         h(
           'div',
           { class: 'legend' },
-          legend('var(--cat-1)', 'Altas'),
-          legend('var(--cat-2)', 'Bajas (expulsado o borrado)'),
+          legend('var(--cat-1)', 'Joined'),
+          legend('var(--cat-2)', 'Left (removed or deleted)'),
         ),
         flowChart(
           o.weeks.map((w) => ({
             label: dayShort(w.week),
             up: w.joins ?? 0,
             down: w.leaves ?? 0,
-            tip: tipRows(`Semana del ${dayShort(w.week)}`, [['var(--cat-1)', 'Altas', fmt(w.joins ?? 0)], ['var(--cat-2)', 'Bajas', fmt(w.leaves ?? 0)], [null, 'Con el bot al cierre', fmt(w.guilds ?? 0)]]),
+            tip: tipRows(`Week of ${dayShort(w.week)}`, [['var(--cat-1)', 'Joined', fmt(w.joins ?? 0)], ['var(--cat-2)', 'Left', fmt(w.leaves ?? 0)], [null, 'With the bot at week end', fmt(w.guilds ?? 0)]]),
           })),
-          { label: 'Altas y bajas por semana' },
+          { label: 'Servers joining and leaving per week' },
         ),
-        tableView(['Semana', 'Altas', 'Bajas', 'Con el bot'], o.weeks.map((w) => [dayShort(w.week), fmt(w.joins ?? 0), fmt(w.leaves ?? 0), fmt(w.guilds ?? 0)])),
+        tableView(['Week', 'Joined', 'Left', 'With the bot'], o.weeks.map((w) => [dayShort(w.week), fmt(w.joins ?? 0), fmt(w.leaves ?? 0), fmt(w.guilds ?? 0)])),
       ),
     ),
     card(
-      'Necesitan atención',
-      items.length === 1 ? '1 aviso' : `${items.length} avisos`,
+      'Needs attention',
+      items.length === 1 ? '1 alert' : `${items.length} alerts`,
       items.length
         ? h(
             'div',
@@ -138,7 +138,7 @@ export function overviewPage(o: Overview, hl: Health, guilds: Guild[], open: (id
               ),
             ),
           )
-        : h('p', { class: 'empty' }, 'Todo en orden: ningún servidor inactivo, expulsado ni con muchos DMs fallidos.'),
+        : h('p', { class: 'empty' }, 'All good: no idle or removed servers, and none losing many DMs.'),
     ),
   ]
 }

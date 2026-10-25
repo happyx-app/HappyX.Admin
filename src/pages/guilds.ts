@@ -15,7 +15,7 @@ const statusOrder: Record<GuildStatus, number> = { active: 0, idle: 1, left: 2 }
 function value(g: Guild, k: SortKey): number | string {
   switch (k) {
     case 'name':
-      return g.name.toLocaleLowerCase('es')
+      return g.name.toLocaleLowerCase('en')
     case 'rate':
       return guildRate(g) ?? -1
     case 'status':
@@ -29,31 +29,31 @@ function value(g: Guild, k: SortKey): number | string {
 
 /** visible applies the filter, the search and the order. */
 export function visible(guilds: Guild[], s = state): Guild[] {
-  const q = s.q.trim().toLocaleLowerCase('es')
+  const q = s.q.trim().toLocaleLowerCase('en')
   return guilds
     .filter((g) => s.filter === 'all' || g.status === s.filter)
-    .filter((g) => !q || g.name.toLocaleLowerCase('es').includes(q) || g.discord_guild_id.includes(q))
+    .filter((g) => !q || g.name.toLocaleLowerCase('en').includes(q) || g.discord_guild_id.includes(q))
     .sort((a, b) => {
       const va = value(a, s.sort)
       const vb = value(b, s.sort)
-      return (va > vb ? 1 : va < vb ? -1 : 0) * s.dir || a.name.localeCompare(b.name, 'es')
+      return (va > vb ? 1 : va < vb ? -1 : 0) * s.dir || a.name.localeCompare(b.name, 'en')
     })
 }
 
 export function guildsPage(guilds: Guild[], open: (id: string) => void, updated: Node): Node[] {
-  const names: Record<Filter, string> = { all: 'Todos', active: 'Activos', idle: 'Sin actividad', left: 'Expulsados' }
+  const names: Record<Filter, string> = { all: 'All', active: 'Active', idle: 'Idle', left: 'Removed' }
   const count = (f: Filter) => (f === 'all' ? guilds.length : guilds.filter((g) => g.status === f).length)
   const tbody = h('tbody')
   const segButtons = (Object.keys(names) as Filter[]).map((f) =>
     h('button', { type: 'button', 'aria-pressed': String(state.filter === f), onclick: () => ((state.filter = f), redraw()) }, names[f], h('span', { class: 'count' }, String(count(f)))),
   )
   const cols: [SortKey, string, boolean][] = [
-    ['name', 'Servidor', false],
-    ['members', 'Miembros', true],
-    ['active_7d', 'Activos 7 d', true],
-    ['rate', 'Tasa de respuesta', true],
-    ['created_at', 'Alta', false],
-    ['status', 'Estado', false],
+    ['name', 'Server', false],
+    ['members', 'Members', true],
+    ['active_7d', 'Active 7 d', true],
+    ['rate', 'Response rate', true],
+    ['created_at', 'Added', false],
+    ['status', 'State', false],
   ]
   const ths = cols.map(([k, label, num]) =>
     h(
@@ -87,24 +87,24 @@ export function guildsPage(guilds: Guild[], open: (id: string) => void, updated:
         )
       }),
     )
-    if (!list.length) tbody.append(h('tr', { class: 'empty-row' }, h('td', { colspan: 6 }, guilds.length ? 'Ningún servidor coincide con la búsqueda.' : 'Aún no hay servidores con el bot.')))
+    if (!list.length) tbody.append(h('tr', { class: 'empty-row' }, h('td', { colspan: 6 }, guilds.length ? 'No server matches the search.' : 'No servers with the bot yet.')))
   }
   redraw()
 
   return [
-    pageHead('Servidores', 'Cada servidor con el bot, o que lo tuvo en los últimos 30 días. Solo recuentos.', updated),
+    pageHead('Servers', 'Every server with the bot, or that had it in the last 30 days. Counts only.', updated),
     h(
       'div',
       { class: 'toolbar' },
-      h('div', { class: 'seg', role: 'group', 'aria-label': 'Filtrar por estado' }, ...segButtons),
+      h('div', { class: 'seg', role: 'group', 'aria-label': 'Filter by state' }, ...segButtons),
       h(
         'label',
         { class: 'search' },
         icon('search', 'icon-sm'),
-        h('input', { id: 'q', type: 'search', placeholder: 'Buscar servidor', value: state.q, 'aria-label': 'Buscar servidor', oninput: (e: Event) => ((state.q = (e.target as HTMLInputElement).value), redraw()) }),
+        h('input', { id: 'q', type: 'search', placeholder: 'Search servers', value: state.q, 'aria-label': 'Search servers', oninput: (e: Event) => ((state.q = (e.target as HTMLInputElement).value), redraw()) }),
       ),
     ),
     h('section', { class: 'card table-card' }, h('div', { class: 'scroll-x' }, h('table', { class: 'table servers-table' }, h('thead', {}, h('tr', {}, ...ths)), tbody))),
-    h('p', { class: 'foot-note' }, 'Los servidores que expulsan al bot se guardan 30 días por si lo vuelven a invitar; después se borran solos.'),
+    h('p', { class: 'foot-note' }, 'Servers that remove the bot are kept for 30 days in case they invite it back; after that they are deleted automatically.'),
   ]
 }

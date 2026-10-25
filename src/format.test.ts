@@ -54,7 +54,7 @@ describe('attention', () => {
       ['Quiet', 'idle'],
       ['Gone', 'left'],
     ])
-    expect(items[2].text).toContain('6 días')
+    expect(items[2].text).toContain('6 days')
   })
   it('ignores a few failed DMs in a big server', () => {
     expect(attention([guild({ failed_7d: 3, recipients_7d: 400 })], now)).toEqual([])
@@ -86,21 +86,21 @@ describe('health levels', () => {
 
 describe('formatting', () => {
   it('says how long ago', () => {
-    expect(ago('2026-10-25T11:59:30Z', now)).toBe('hace un momento')
-    expect(ago('2026-10-25T11:15:00Z', now)).toBe('hace 45 min')
-    expect(ago('2026-10-24T12:00:00Z', now)).toBe('hace 24 h')
-    expect(ago('2026-10-20T12:00:00Z', now)).toBe('hace 5 días')
+    expect(ago('2026-10-25T11:59:30Z', now)).toBe('just now')
+    expect(ago('2026-10-25T11:15:00Z', now)).toBe('45 min ago')
+    expect(ago('2026-10-24T12:00:00Z', now)).toBe('24 h ago')
+    expect(ago('2026-10-20T12:00:00Z', now)).toBe('5 days ago')
     expect(daysUntil('2026-10-24T00:00:00Z', now)).toBe(0)
   })
   it('shortens working days', () => {
-    expect(workingDays([1, 2, 3, 4, 5])).toBe('L–V')
-    expect(workingDays([5, 1, 3])).toBe('L, X, V')
-    expect(workingDays([6, 7])).toBe('S, D')
+    expect(workingDays([1, 2, 3, 4, 5])).toBe('Mon–Fri')
+    expect(workingDays([5, 1, 3])).toBe('Mon, Wed, Fri')
+    expect(workingDays([6, 7])).toBe('Sat, Sun')
   })
   it('formats sizes', () => {
     expect(bytes(512)).toBe('512 B')
     expect(bytes(184 * 1024 * 1024)).toBe('184 MB')
-    expect(bytes(1.5 * 1024 * 1024)).toBe('1,5 MB')
+    expect(bytes(1.5 * 1024 * 1024)).toBe('1.5 MB')
   })
   it('gives each server stable initials and colour', () => {
     expect(initials('Club d’Escacs Gràcia')).toBe('CD')

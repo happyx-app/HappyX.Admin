@@ -2,7 +2,7 @@
 // a hover tooltip and a table view. Every chart redraws to its container's width.
 
 import { h, s } from './dom'
-import { fmt } from './format'
+import { fmt, pct } from './format'
 
 type Draw = (width: number, tip: HTMLElement) => SVGSVGElement
 
@@ -292,7 +292,7 @@ export function tableView(head: string[], rows: (string | number)[][], numericFr
   return h(
     'details',
     { class: 'table-view' },
-    h('summary', {}, 'Ver como tabla'),
+    h('summary', {}, 'Show as table'),
     h(
       'div',
       { class: 'scroll-x' },
@@ -309,7 +309,7 @@ export function tableView(head: string[], rows: (string | number)[][], numericFr
 /** Horizontal bars for how many servers have each value of a setting. */
 export function distribution(rows: { label: string; n: number }[], total: number): HTMLElement {
   const max = Math.max(1, ...rows.map((r) => r.n))
-  if (rows.length === 0) return h('p', { class: 'empty' }, 'Sin servidores todavía.')
+  if (rows.length === 0) return h('p', { class: 'empty' }, 'No servers yet.')
   return h(
     'div',
     { class: 'dist' },
@@ -318,10 +318,10 @@ export function distribution(rows: { label: string; n: number }[], total: number
       fill.style.width = `${(n / max) * 100}%`
       return h(
         'div',
-        { class: 'dist-row', title: `${label}: ${n} de ${total} servidores` },
+        { class: 'dist-row', title: `${label}: ${n} of ${total} servers` },
         h('span', { class: 'lbl' }, label),
         h('span', { class: 'trk' }, fill),
-        h('span', { class: 'n' }, String(n), ' ', h('small', {}, total > 0 ? `${fmt((n / total) * 100)} %` : '')),
+        h('span', { class: 'n' }, String(n), ' ', h('small', {}, total > 0 ? pct(n / total) : '')),
       )
     }),
   )

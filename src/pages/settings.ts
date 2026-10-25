@@ -4,47 +4,47 @@ import { h } from '../dom'
 import { languageName } from '../format'
 import { card, pageHead } from '../ui'
 
-/** top keeps the n most common values and folds the rest into "Otras". */
+/** top keeps the n most common values and folds the rest into "Other". */
 export function top(cs: Count[], n: number, label: (v: string) => string = (v) => v): { label: string; n: number }[] {
   const sorted = [...cs].sort((a, b) => b.guilds - a.guilds || a.value.localeCompare(b.value))
   const head = sorted.slice(0, n).map((c) => ({ label: label(c.value), n: c.guilds }))
   const rest = sorted.slice(n).reduce((a, c) => a + c.guilds, 0)
-  return rest > 0 ? [...head, { label: 'Otras', n: rest }] : head
+  return rest > 0 ? [...head, { label: 'Other', n: rest }] : head
 }
 
 const names: Record<string, string> = {
-  anonymous: 'Anónimas',
-  public: 'Públicas',
-  weekly: 'Semanal',
-  monthly: 'Mensual',
-  on: 'Activado',
-  off: 'Desactivado',
-  all: 'Todos',
-  except: 'Todos excepto unos roles',
-  only: 'Solo unos roles',
+  anonymous: 'Anonymous',
+  public: 'Public',
+  weekly: 'Weekly',
+  monthly: 'Monthly',
+  on: 'On',
+  off: 'Off',
+  all: 'Everyone',
+  except: 'All but some roles',
+  only: 'Only some roles',
 }
 const named = (v: string) => names[v] ?? v
 
 export function settingsPage(st: Settings, updated: Node): Node[] {
   const N = st.guilds
   const extras: Record<string, string> = {
-    games: 'Juego «¿Quién es quién?»',
-    kudos_channel: 'Canal de kudos',
-    custom_message: 'Mensaje de encuesta propio',
-    custom_days: 'Días laborables cambiados',
+    games: "“Who's who?” game",
+    kudos_channel: 'Kudos channel',
+    custom_message: 'Custom message',
+    custom_days: 'Custom days',
   }
   return [
-    pageHead('Configuración de los servidores', `Cómo tienen configurado HappyX los ${N} servidores con el bot dentro. Sirve para decidir valores por defecto.`, updated),
+    pageHead('Server settings', `How the ${N} servers with the bot have set HappyX up. Useful for choosing defaults.`, updated),
     h(
       'div',
       { class: 'grid-2' },
-      card('Idioma', null, distribution(top(st.language, 5, languageName), N)),
-      card('Zona horaria', null, distribution(top(st.timezone, 5), N)),
-      card('Hora de la encuesta', null, distribution(top(st.survey_hour, 5), N)),
-      card('Respuestas', null, distribution(top(st.anonymous, 2, named), N)),
-      card('Frecuencia del report', null, distribution(top(st.report_frequency, 2, named), N)),
-      card('Report por DM al admin', null, distribution(top(st.report_dm, 2, named), N)),
-      card('Quién recibe la encuesta', null, distribution(top(st.survey_roles, 3, named), N)),
+      card('Language', null, distribution(top(st.language, 5, languageName), N)),
+      card('Timezone', null, distribution(top(st.timezone, 5), N)),
+      card('Survey time', null, distribution(top(st.survey_hour, 5), N)),
+      card('Answers', null, distribution(top(st.anonymous, 2, named), N)),
+      card('Report frequency', null, distribution(top(st.report_frequency, 2, named), N)),
+      card('Report DM to the admin', null, distribution(top(st.report_dm, 2, named), N)),
+      card('Who gets the survey', null, distribution(top(st.survey_roles, 3, named), N)),
       card('Extras', null, distribution(st.extras.map((c) => ({ label: extras[c.value] ?? c.value, n: c.guilds })), N)),
     ),
   ]

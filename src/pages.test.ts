@@ -33,7 +33,7 @@ describe('server list', () => {
 })
 
 describe('settings', () => {
-  it('folds the long tail into Otras', () => {
+  it('folds the long tail into Other', () => {
     const cs = [
       { value: 'Europe/Madrid', guilds: 5 },
       { value: 'Europe/London', guilds: 2 },
@@ -43,18 +43,18 @@ describe('settings', () => {
     expect(top(cs, 2)).toEqual([
       { label: 'Europe/Madrid', n: 5 },
       { label: 'Europe/London', n: 2 },
-      { label: 'Otras', n: 2 },
+      { label: 'Other', n: 2 },
     ])
   })
 })
 
 describe('routes', () => {
   it('reads the page and server from the fragment', () => {
-    expect(parseRoute('')).toEqual({ page: 'resumen' })
-    expect(parseRoute('#/servidores')).toEqual({ page: 'servidores' })
-    expect(parseRoute('#/servidores/100000000000000001')).toEqual({ page: 'servidores', guild: '100000000000000001' })
-    expect(parseRoute('#/servidores/../etc')).toEqual({ page: 'servidores' })
-    expect(parseRoute('#/salud')).toEqual({ page: 'salud' })
-    expect(parseRoute('#/nada')).toEqual({ page: 'resumen' })
+    expect(parseRoute('')).toEqual({ page: 'overview' })
+    expect(parseRoute('#/servers')).toEqual({ page: 'servers' })
+    expect(parseRoute('#/servers/100000000000000001')).toEqual({ page: 'servers', guild: '100000000000000001' })
+    expect(parseRoute('#/servers/../etc')).toEqual({ page: 'servers' })
+    expect(parseRoute('#/health')).toEqual({ page: 'health' })
+    expect(parseRoute('#/nothing')).toEqual({ page: 'overview' })
   })
 })
