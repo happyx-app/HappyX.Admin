@@ -69,7 +69,7 @@ KEY=$(openssl rand -hex 32); echo "ADMIN_API_KEY=$KEY"; echo -n "$KEY" | sha256s
 
 | Variable | Purpose |
 | --- | --- |
-| `ADMIN_API_KEY` | Required. The admin key; the container refuses to start without it |
+| `ADMIN_API_KEY` | The admin key. Without it the dashboard only shows how to set it up |
 | `API_URL` | The API's admin port on the internal network, default `http://api:8081` |
 
 The image listens on port 8080 (`ghcr.io/happyx-app/happyx-admin`, amd64 and arm64).

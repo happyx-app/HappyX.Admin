@@ -8,9 +8,9 @@ COPY . .
 RUN npm run build
 
 FROM nginxinc/nginx-unprivileged:1.31-alpine
-# API_URL is the API's admin port on the stack's internal network; ADMIN_API_KEY is required.
+# API_URL is the API's admin port on the stack's internal network; ADMIN_API_KEY is needed to load data.
 ENV API_URL=http://api:8081
 COPY nginx.conf.template /etc/nginx/templates/default.conf.template
-COPY --chmod=755 docker/05-require-admin-key.sh /docker-entrypoint.d/
+COPY --chmod=755 docker/05-check-admin-key.sh /docker-entrypoint.d/
 COPY --from=build /src/dist /usr/share/nginx/html
 EXPOSE 8080
