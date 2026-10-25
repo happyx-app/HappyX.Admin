@@ -1,0 +1,110 @@
+import type { Guild, GuildStatus } from '../api'
+import { h } from '../dom'
+import { dateMedium, fmt, guildRate, pct } from '../format'
+import { icon } from '../icons'
+import { guildBadge, pageHead, statusPill } from '../ui'
+
+type Filter = 'all' | GuildStatus
+type SortKey = 'name' | 'members' | 'active_7d' | 'rate' | 'created_at' | 'status'
+
+// What the list remembers while the page is open: filter, search and order.
+const state: { filter: Filter; q: string; sort: SortKey; dir: 1 | -1 } = { filter: 'all', q: '', sort: 'members', dir: -1 }
+
+const statusOrder: Record<GuildStatus, number> = { active: 0, idle: 1, left: 2 }
+
+function value(g: Guild, k: SortKey): number | string {
+  switch (k) {
+    case 'name':
+      return g.name.toLocaleLowerCase('es')
+    case 'rate':
+      return guildRate(g) ?? -1
+    case 'status':
+      return statusOrder[g.status]
+    case 'created_at':
+      return g.created_at
+    default:
+      return g[k]
+  }
+}
+
+/** visible applies the filter, the search and the order. */
+export function visible(guilds: Guild[], s = state): Guild[] {
+  const q = s.q.trim().toLocaleLowerCase('es')
+  return guilds
+    .filter((g) => s.filter === 'all' || g.status === s.filter)
+    .filter((g) => !q || g.name.toLocaleLowerCase('es').includes(q) || g.discord_guild_id.includes(q))
+    .sort((a, b) => {
+      const va = value(a, s.sort)
+      const vb = value(b, s.sort)
+      return (va > vb ? 1 : va < vb ? -1 : 0) * s.dir || a.name.localeCompare(b.name, 'es')
+    })
+}
+
+export function guildsPage(guilds: Guild[], open: (id: string) => void, updated: Node): Node[] {
+  const names: Record<Filter, string> = { all: 'Todos', active: 'Activos', idle: 'Sin actividad', left: 'Expulsados' }
+  const count = (f: Filter) => (f === 'all' ? guilds.length : guilds.filter((g) => g.status === f).length)
+  const tbody = h('tbody')
+  const segButtons = (Object.keys(names) as Filter[]).map((f) =>
+    h('button', { type: 'button', 'aria-pressed': String(state.filter === f), onclick: () => ((state.filter = f), redraw()) }, names[f], h('span', { class: 'count' }, String(count(f)))),
+  )
+  const cols: [SortKey, string, boolean][] = [
+    ['name', 'Servidor', false],
+    ['members', 'Miembros', true],
+    ['active_7d', 'Activos 7 d', true],
+    ['rate', 'Tasa de respuesta', true],
+    ['created_at', 'Alta', false],
+    ['status', 'Estado', false],
+  ]
+  const ths = cols.map(([k, label, num]) =>
+    h(
+      'th',
+      { class: num ? 'num' : '' },
+      h('button', { type: 'button', onclick: () => ((state.dir = state.sort === k ? (state.dir === 1 ? -1 : 1) : k === 'name' ? 1 : -1), (state.sort = k), redraw()) }, label),
+    ),
+  )
+
+  function redraw() {
+    segButtons.forEach((b, i) => b.setAttribute('aria-pressed', String((Object.keys(names) as Filter[])[i] === state.filter)))
+    ths.forEach((th, i) => {
+      if (cols[i][0] === state.sort) th.setAttribute('aria-sort', state.dir === 1 ? 'ascending' : 'descending')
+      else th.removeAttribute('aria-sort')
+    })
+    const list = visible(guilds)
+    tbody.replaceChildren(
+      ...list.map((g) => {
+        const rate = guildRate(g)
+        const fill = h('span', { class: 'fill' })
+        fill.style.width = `${(rate ?? 0) * 100}%`
+        return h(
+          'tr',
+          { tabindex: 0, onclick: () => open(g.discord_guild_id), onkeydown: (e: Event) => (e as KeyboardEvent).key === 'Enter' && open(g.discord_guild_id) },
+          h('td', {}, h('span', { class: 'srv' }, guildBadge(g), h('span', { class: 'srv-name', title: g.name }, g.name))),
+          h('td', { class: 'num' }, fmt(g.members)),
+          h('td', { class: 'num' }, g.status === 'left' ? '–' : fmt(g.active_7d)),
+          h('td', { class: 'num' }, rate === null ? '–' : h('span', { class: 'rate' }, pct(rate), h('span', { class: 'track' }, fill))),
+          h('td', {}, dateMedium(g.created_at)),
+          h('td', {}, statusPill(g)),
+        )
+      }),
+    )
+    if (!list.length) tbody.append(h('tr', { class: 'empty-row' }, h('td', { colspan: 6 }, guilds.length ? 'Ningún servidor coincide con la búsqueda.' : 'Aún no hay servidores con el bot.')))
+  }
+  redraw()
+
+  return [
+    pageHead('Servidores', 'Cada servidor con el bot, o que lo tuvo en los últimos 30 días. Solo recuentos.', updated),
+    h(
+      'div',
+      { class: 'toolbar' },
+      h('div', { class: 'seg', role: 'group', 'aria-label': 'Filtrar por estado' }, ...segButtons),
+      h(
+        'label',
+        { class: 'search' },
+        icon('search', 'icon-sm'),
+        h('input', { id: 'q', type: 'search', placeholder: 'Buscar servidor', value: state.q, 'aria-label': 'Buscar servidor', oninput: (e: Event) => ((state.q = (e.target as HTMLInputElement).value), redraw()) }),
+      ),
+    ),
+    h('section', { class: 'card table-card' }, h('div', { class: 'scroll-x' }, h('table', { class: 'table servers-table' }, h('thead', {}, h('tr', {}, ...ths)), tbody))),
+    h('p', { class: 'foot-note' }, 'Los servidores que expulsan al bot se guardan 30 días por si lo vuelven a invitar; después se borran solos.'),
+  ]
+}

@@ -1,0 +1,52 @@
+# Rendered by the nginx image at startup (envsubst): ${API_URL} is the API's admin port and
+# ${ADMIN_API_KEY} the admin key, which nginx adds to every API request so the browser never
+# holds it.
+
+server {
+    listen 8080;
+    server_name _;
+    root /usr/share/nginx/html;
+    server_tokens off;
+
+    # Only the local network. This dashboard sees every server using HappyX, so never publish it
+    # to the internet or put it behind a public reverse proxy or tunnel.
+    allow 127.0.0.0/8;
+    allow 10.0.0.0/8;
+    allow 172.16.0.0/12;
+    allow 192.168.0.0/16;
+    allow ::1;
+    allow fc00::/7;
+    allow fe80::/10;
+    deny all;
+
+    add_header Content-Security-Policy "default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self'; connect-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'none'" always;
+    add_header X-Content-Type-Options nosniff always;
+    add_header Referrer-Policy no-referrer always;
+    add_header X-Robots-Tag "noindex, nofollow" always;
+
+    # The admin API only answers GET; nothing here can change data.
+    location /api/admin/ {
+        limit_except GET { deny all; }
+        proxy_pass ${API_URL}/admin/;
+        proxy_set_header Authorization "Bearer ${ADMIN_API_KEY}";
+        proxy_set_header Cookie "";
+        proxy_set_header Host $host;
+    }
+    location /api/ {
+        return 404;
+    }
+
+    # The dashboard is a single document at "/"; its routes live in the URL fragment and its
+    # built files under /assets/. Anything else is not found.
+    location = / {
+        try_files /index.html =404;
+        expires -1;
+    }
+    location /assets/ {
+        try_files $uri =404;
+        expires 1y;
+    }
+    location / {
+        return 404;
+    }
+}
