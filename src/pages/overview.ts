@@ -1,7 +1,8 @@
 import type { Guild, Health, Overview } from '../api'
 import { barChart, flowChart, lineChart, spark, tableView, tipRows } from '../charts'
 import { h } from '../dom'
-import { attention, dayLong, dayShort, fmt, isWeekend, pct, pctOrDash, rateOf, ratio } from '../format'
+import type { Phase0 } from '../api'
+import { attention, dayLong, dayShort, fmt, isWeekend, pct, pctOrDash, PHASE0_ACTIVE_GOAL, PHASE0_PAY_GOAL, rateOf, ratio, wouldPay } from '../format'
 import { icon } from '../icons'
 import { card, guildBadge, healthStrip, kpi, pageHead, pill, statList, unit } from '../ui'
 
@@ -47,6 +48,7 @@ export function overviewPage(o: Overview, hl: Health, guilds: Guild[], open: (id
       kpi('Response rate', rate === null ? '–' : unit(fmt(rate * 100), '%'), rateFoot, weeksWithRate.filter((r) => r !== null).length > 1 ? spark(weeksWithRate.map((r) => r ?? 0)) : undefined),
       kpi('Active people (7 d)', fmt(o.people.active_7d), `of ${fmt(o.people.members)} members`),
     ),
+    ...(o.phase0 ? [phase0Card(o.phase0)] : []),
     h(
       'div',
       { class: 'grid-main' },
@@ -141,6 +143,45 @@ export function overviewPage(o: Overview, hl: Health, guilds: Guild[], open: (id
         : h('p', { class: 'empty' }, 'All good: no idle or removed servers, and none losing many DMs.'),
     ),
   ]
+}
+
+// Progress towards the market study's Phase 0 gate, before any billing gets built.
+function phase0Card(p: Phase0): HTMLElement {
+  const pay = wouldPay(p.pro_prices)
+  const goal = (label: string, n: number, of: number, note: string) => {
+    const fill = h('span', { class: 'goal-fill' })
+    fill.style.width = `${Math.min(100, (n / of) * 100)}%`
+    return h(
+      'div',
+      { class: 'goal' },
+      h('div', { class: 'goal-head' }, h('span', {}, label), h('b', {}, `${fmt(n)} / ${fmt(of)}`)),
+      h('span', { class: 'goal-track', role: 'progressbar', 'aria-valuemin': '0', 'aria-valuemax': String(of), 'aria-valuenow': String(n), 'aria-label': label }, fill),
+      h('small', {}, note),
+    )
+  }
+  const price = (v: string, label: string) => [label, fmt(p.pro_prices[v] ?? 0)] as [string, string]
+  return card(
+    'Phase 0: is it worth charging?',
+    'Goal from the market study',
+    h(
+      'div',
+      { class: 'grid-2' },
+      h(
+        'div',
+        { class: 'goals' },
+        goal('Active servers', p.active_guilds, PHASE0_ACTIVE_GOAL, '5 or more people answering in the last 7 days'),
+        goal('Servers that would pay', pay, PHASE0_PAY_GOAL, 'Picked a price above nothing on the Pro waitlist'),
+      ),
+      statList([
+        ['Past the free plan (15+ people)', fmt(p.over_free)],
+        ['«I’m interested» on the waitlist', fmt(p.pro_interested)],
+        price('0', 'Would pay nothing'),
+        price('5', 'Up to €5 a month'),
+        price('9', '€9 a month'),
+        price('29', '€29 a month'),
+      ]),
+    ),
+  )
 }
 
 function legend(color: string, text: string): HTMLElement {

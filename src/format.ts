@@ -75,6 +75,11 @@ export function workingDays(days: number[]): string {
 }
 
 /** rateOf is the response rate of some days or weeks: answers to surveys over the people they went to. */
+// Phase 0 passes with 50 active servers and 10 that would pay (any price above nothing).
+export const PHASE0_ACTIVE_GOAL = 50
+export const PHASE0_PAY_GOAL = 10
+export const wouldPay = (prices: Record<string, number>) => Object.entries(prices).reduce((n, [p, c]) => (p !== '0' ? n + c : n), 0)
+
 export const rateOf = (xs: (Day | Week)[]) =>
   ratio(
     xs.reduce((a, x) => a + x.answered, 0),
