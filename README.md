@@ -102,6 +102,10 @@ src/ui.ts          cards, pills, the health strip
 nginx.conf.template  local network only, adds the admin key, 404 for anything else
 ```
 
+## How it's built
+
+HappyX is developed with AI assistance. Every change is reviewed and approved by the maintainer before it's merged.
+
 ## License
 
-[MIT](LICENSE).
+[AGPL-3.0](LICENSE). Versions published before 30 October 2026 (up to commit [`09a831d`](https://github.com/happyx-app/HappyX.Admin/tree/09a831d6557a81a502c208fc3252514c27ef19b9)) remain available under the MIT License.
