@@ -1,7 +1,8 @@
 import type { Guild, Health, Overview } from '../api'
 import { barChart, flowChart, lineChart, spark, tableView, tipRows } from '../charts'
 import { h } from '../dom'
-import { attention, dayLong, dayShort, fmt, isWeekend, pct, pctOrDash, rateOf, ratio } from '../format'
+import type { Phase0 } from '../api'
+import { attention, dayLong, dayShort, fmt, isWeekend, pct, pctOrDash, PHASE0_ACTIVE_GOAL, rateOf, ratio } from '../format'
 import { icon } from '../icons'
 import { card, guildBadge, healthStrip, kpi, pageHead, pill, statList, unit } from '../ui'
 
@@ -47,6 +48,7 @@ export function overviewPage(o: Overview, hl: Health, guilds: Guild[], open: (id
       kpi('Response rate', rate === null ? '–' : unit(fmt(rate * 100), '%'), rateFoot, weeksWithRate.filter((r) => r !== null).length > 1 ? spark(weeksWithRate.map((r) => r ?? 0)) : undefined),
       kpi('Active people (7 d)', fmt(o.people.active_7d), `of ${fmt(o.people.members)} members`),
     ),
+    ...(o.phase0 ? [phase0Card(o.phase0)] : []),
     h(
       'div',
       { class: 'grid-main' },
@@ -141,6 +143,28 @@ export function overviewPage(o: Overview, hl: Health, guilds: Guild[], open: (id
         : h('p', { class: 'empty' }, 'All good: no idle or removed servers, and none losing many DMs.'),
     ),
   ]
+}
+
+// Progress towards the market study's Phase 0 gate, before any billing gets built.
+function phase0Card(p: Phase0): HTMLElement {
+  const fill = h('span', { class: 'goal-fill' })
+  fill.style.width = `${Math.min(100, (p.active_guilds / PHASE0_ACTIVE_GOAL) * 100)}%`
+  return card(
+    'Phase 0: is it worth charging?',
+    'Goal from the market study',
+    h(
+      'div',
+      { class: 'grid-2' },
+      h(
+        'div',
+        { class: 'goal' },
+        h('div', { class: 'goal-head' }, h('span', {}, 'Active servers'), h('b', {}, `${fmt(p.active_guilds)} / ${fmt(PHASE0_ACTIVE_GOAL)}`)),
+        h('span', { class: 'goal-track', role: 'progressbar', 'aria-valuemin': '0', 'aria-valuemax': String(PHASE0_ACTIVE_GOAL), 'aria-valuenow': String(p.active_guilds), 'aria-label': 'Active servers' }, fill),
+        h('small', {}, '5 or more people answering in the last 7 days'),
+      ),
+      statList([['Past the free plan (15+ people)', fmt(p.over_free)]]),
+    ),
+  )
 }
 
 function legend(color: string, text: string): HTMLElement {
