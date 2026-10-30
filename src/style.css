@@ -253,7 +253,6 @@ table.table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
 .v-plain { font-weight: 500; }
 
 /* Phase 0 goals */
-.goals { display: grid; gap: 18px; align-content: start; }
 .goal { display: grid; gap: 6px; }
 .goal-head { display: flex; justify-content: space-between; gap: 12px; }
 .goal-track { display: block; height: 10px; border-radius: 5px; background: var(--series-soft); overflow: hidden; }

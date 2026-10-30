@@ -38,8 +38,6 @@ export interface Overview {
 export interface Phase0 {
   active_guilds: number // 5 or more people answered in the last 7 days
   over_free: number // the survey reaches more than 15 people
-  pro_interested: number // clicked «I'm interested» on the Pro waitlist
-  pro_prices: Record<string, number> // «How much would you pay?» answers: "0", "5", "9", "29" (€/month)
 }
 
 export type GuildStatus = 'active' | 'idle' | 'left'

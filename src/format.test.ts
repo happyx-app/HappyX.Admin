@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { Guild, Health } from './api'
-import { ago, attention, backupLevel, botLevel, bytes, colorSlot, daysUntil, initials, pctOrDash, rateOf, ratio, workingDays, wouldPay } from './format'
+import { ago, attention, backupLevel, botLevel, bytes, colorSlot, daysUntil, initials, pctOrDash, rateOf, ratio, workingDays } from './format'
 
 const guild = (over: Partial<Guild>): Guild => ({
   discord_guild_id: '100000000000000001',
@@ -108,12 +108,5 @@ describe('formatting', () => {
     expect(colorSlot('100000000000000001')).toBe(colorSlot('100000000000000001'))
     expect(colorSlot('100000000000000001')).toBeGreaterThanOrEqual(1)
     expect(colorSlot('100000000000000001')).toBeLessThanOrEqual(8)
-  })
-})
-
-describe('phase 0', () => {
-  it('counts servers that would pay anything', () => {
-    expect(wouldPay({ '0': 4, '5': 2, '9': 3, '29': 1 })).toBe(6)
-    expect(wouldPay({})).toBe(0)
   })
 })
