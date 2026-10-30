@@ -31,6 +31,13 @@ export interface Overview {
   failed_7d: KindCounts
   days: Day[]
   weeks: Week[]
+  // The market study's Phase 0 numbers; older APIs leave them out.
+  phase0?: Phase0
+}
+
+export interface Phase0 {
+  active_guilds: number // 5 or more people answered in the last 7 days
+  over_free: number // the survey reaches more than 15 people
 }
 
 export type GuildStatus = 'active' | 'idle' | 'left'
