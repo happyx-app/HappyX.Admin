@@ -1,44 +1,49 @@
 
-/* Same tokens and look as HappyX.Web (src/style.css there): violet leads, yellow is the small warm accent. */
+@import '@fontsource-variable/nunito';
+
+/* Same tokens and look as HappyX.Web (src/style.css there): a lavender page, borderless cards with
+   soft violet shadows, round corners and Nunito for titles and numbers. Violet leads, yellow is the
+   small warm accent. */
 :root {
   color-scheme: light;
-  --page: #f9f9f7; --surface: #fcfcfb; --surface-2: #f0efec;
-  --ink: #0b0b0b; --ink-2: #52514e; --muted: #6f6d68;
-  --grid: #e1e0d9; --axis: #c3c2b7; --border: rgba(11, 11, 11, 0.1);
+  --page: #f7f4ff; --surface: #ffffff; --surface-2: #f4f0fe;
+  --ink: #1f1640; --ink-2: #4d4470; --muted: #6b6390;
+  --grid: #ece6fb; --axis: #d6cdf3; --border: rgba(76, 52, 160, 0.1);
   --series: #7c3aed; --series-soft: #ede9fe; --accent: #6d28d9; --primary: #7c3aed;
   --sun: #fbbf24; --sun-soft: #fef3c7; --sun-ink: #352310;
   --cat-1: #7c3aed; --cat-2: #eb6834;
   --good: #0ca30c; --warning: #fab219; --serious: #ec835a; --critical: #d03b3b;
   --good-soft: #e3f5e3; --warning-soft: #fdf1d6; --critical-soft: #fbe5e5;
-  --shadow: 0 1px 2px rgba(11, 11, 11, 0.04), 0 4px 16px rgba(11, 11, 11, 0.04);
-  --radius: 14px;
+  --shadow: 0 2px 4px rgba(76, 52, 160, 0.04), 0 12px 32px rgba(76, 52, 160, 0.08);
+  --radius: 24px;
   --font: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --display: 'Nunito Variable', system-ui, sans-serif;
   --mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
   --cat-3: #1baf7a; --cat-4: #eda100; --cat-5: #e87ba4; --cat-6: #008300; --cat-7: #2a78d6; --cat-8: #e34948;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     color-scheme: dark;
-    --page: #0d0d0d; --surface: #1a1a19; --surface-2: #262624;
-    --ink: #f0efec; --ink-2: #c3c2b7; --muted: #9a9893;
-    --grid: #2c2c2a; --axis: #383835; --border: rgba(255, 255, 255, 0.1);
-    --series: #9b72f8; --series-soft: #3b2470; --accent: #b49afb;
+    --page: #140f24; --surface: #1e1733; --surface-2: #2a2145;
+    --ink: #f3efff; --ink-2: #c9c0ea; --muted: #9a90c0;
+    --grid: #2c2447; --axis: #3d335e; --border: rgba(200, 180, 255, 0.12);
+    --series: #a78bfa; --series-soft: #2e2257; --accent: #b49afb;
     --sun: #fcd34d; --sun-soft: #3a2f12; --sun-ink: #fcd34d;
-    --cat-1: #9b72f8; --cat-2: #d95926; --cat-3: #199e70; --cat-4: #c98500; --cat-5: #d55181; --cat-7: #3987e5; --cat-8: #e66767;
+    --cat-1: #a78bfa; --cat-2: #d95926; --cat-3: #199e70; --cat-4: #c98500; --cat-5: #d55181; --cat-7: #3987e5; --cat-8: #e66767;
     --good-soft: #15301a; --warning-soft: #36290c; --critical-soft: #3a1717;
-    --shadow: none;
+    --shadow: 0 0 0 1px rgba(200, 180, 255, 0.06);
   }
 }
 :root[data-theme="dark"] {
   color-scheme: dark;
-  --page: #0d0d0d; --surface: #1a1a19; --surface-2: #262624;
-  --ink: #f0efec; --ink-2: #c3c2b7; --muted: #9a9893;
-  --grid: #2c2c2a; --axis: #383835; --border: rgba(255, 255, 255, 0.1);
-  --series: #9b72f8; --series-soft: #3b2470; --accent: #b49afb;
+  --page: #140f24; --surface: #1e1733; --surface-2: #2a2145;
+  --ink: #f3efff; --ink-2: #c9c0ea; --muted: #9a90c0;
+  --grid: #2c2447; --axis: #3d335e; --border: rgba(200, 180, 255, 0.12);
+  --series: #a78bfa; --series-soft: #2e2257; --accent: #b49afb;
   --sun: #fcd34d; --sun-soft: #3a2f12; --sun-ink: #fcd34d;
-  --cat-1: #9b72f8; --cat-2: #d95926; --cat-3: #199e70; --cat-4: #c98500; --cat-5: #d55181; --cat-7: #3987e5; --cat-8: #e66767;
+  --cat-1: #a78bfa; --cat-2: #d95926; --cat-3: #199e70; --cat-4: #c98500; --cat-5: #d55181; --cat-7: #3987e5; --cat-8: #e66767;
   --good-soft: #15301a; --warning-soft: #36290c; --critical-soft: #3a1717;
-  --shadow: none;
+  --shadow: 0 0 0 1px rgba(200, 180, 255, 0.06);
 }
 
 * { box-sizing: border-box; }
@@ -258,3 +263,21 @@ table.table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
 .goal-track { display: block; height: 10px; border-radius: 5px; background: var(--series-soft); overflow: hidden; }
 .goal-fill { display: block; height: 100%; border-radius: 5px; background: var(--series); }
 .goal small { color: var(--muted); }
+
+/* Suave: rounded titles and numbers, pill controls, borderless cards. */
+h1, h2, .brand, .kpi .value, .hchip .val, .stat-row .v { font-family: var(--display); }
+h1 { font-weight: 900; font-size: 2.1rem; letter-spacing: -0.02em; }
+h2 { font-weight: 800; font-size: 1.15rem; }
+.brand { font-weight: 800; font-size: 1.2rem; }
+.nav-link, .nav-link.nav-on { border-radius: 999px; }
+.lan, .icon-btn { border-radius: 999px; background: var(--surface); }
+.card, .kpi { border: 0; }
+.kpi { border-radius: var(--radius); padding: 18px 20px; }
+.kpi .value { font-weight: 900; font-size: 2.6rem; }
+.hchip { border: 0; border-radius: 20px; box-shadow: var(--shadow); padding: 14px 16px; }
+.hchip .val { font-weight: 800; font-size: 1.05rem; }
+.attn-item { border-radius: 16px; }
+.pill { padding: 3px 10px 3px 8px; }
+.stat-row .v { font-weight: 800; font-size: 1.05rem; }
+.chart .line { stroke-width: 3; }
+.chart .area { opacity: 0.2; }

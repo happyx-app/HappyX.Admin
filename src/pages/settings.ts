@@ -14,7 +14,7 @@ export function top(cs: Count[], n: number, label: (v: string) => string = (v) =
 
 const names: Record<string, string> = {
   anonymous: 'Anonymous',
-  public: 'Public',
+  public: 'Named',
   weekly: 'Weekly',
   monthly: 'Monthly',
   on: 'On',
@@ -34,7 +34,7 @@ export function settingsPage(st: Settings, updated: Node): Node[] {
     custom_days: 'Custom days',
   }
   return [
-    pageHead('Server settings', `How the ${N} servers with the bot have set HappyX up. Useful for choosing defaults.`, updated),
+    pageHead('Server settings', `Settings across the ${N} servers with the bot.`, updated),
     h(
       'div',
       { class: 'grid-2' },

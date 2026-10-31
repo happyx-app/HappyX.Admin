@@ -101,7 +101,7 @@ export function attention(guilds: Guild[], now = Date.now()): Attention[] {
       out.push({ guild: g, kind: 'left', text: `Removed the bot · deleted in ${daysUntil(g.purge_at, now)} days` })
     }
     if (g.status !== 'left' && g.failed_7d > 0 && g.failed_7d >= FailedShare * g.recipients_7d) {
-      out.push({ guild: g, kind: 'failed', text: `${fmt(g.failed_7d)} failed DMs this week` })
+      out.push({ guild: g, kind: 'failed', text: `${fmt(g.failed_7d)} failed DMs (7 d)` })
     }
   }
   const order = { failed: 0, idle: 1, left: 2 }

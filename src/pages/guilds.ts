@@ -92,7 +92,7 @@ export function guildsPage(guilds: Guild[], open: (id: string) => void, updated:
   redraw()
 
   return [
-    pageHead('Servers', 'Every server with the bot, or that had it in the last 30 days. Counts only.', updated),
+    pageHead('Servers', 'Every server with the bot, or that had it in the last 30 days.', updated),
     h(
       'div',
       { class: 'toolbar' },
@@ -105,6 +105,6 @@ export function guildsPage(guilds: Guild[], open: (id: string) => void, updated:
       ),
     ),
     h('section', { class: 'card table-card' }, h('div', { class: 'scroll-x' }, h('table', { class: 'table servers-table' }, h('thead', {}, h('tr', {}, ...ths)), tbody))),
-    h('p', { class: 'foot-note' }, 'Servers that remove the bot are kept for 30 days in case they invite it back; after that they are deleted automatically.'),
+    h('p', { class: 'foot-note' }, 'Servers that remove the bot are deleted after 30 days.'),
   ]
 }

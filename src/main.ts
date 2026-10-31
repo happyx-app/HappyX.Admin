@@ -96,7 +96,7 @@ async function render() {
     }
     if (id !== renderId) return // a newer navigation won
     loadedAt = Date.now()
-    main.replaceChildren(...nodes, h('p', { class: 'foot-note' }, 'HappyX Admin · counts only: never moods, messages or names.'))
+    main.replaceChildren(...nodes, h('p', { class: 'foot-note' }, 'Counts only. No moods, comments or names.'))
     // Refresh the "updated" label now that loadedAt moved.
     main.querySelectorAll('.updated .muted').forEach((el) => (el.textContent = `Updated ${ago(new Date(loadedAt).toISOString())}`))
   } catch (err) {
