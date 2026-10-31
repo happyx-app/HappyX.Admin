@@ -12,7 +12,7 @@ export function card(title: string, sub: string | null, ...children: Child[]): H
 }
 
 export function pageHead(title: string, sub: string, right?: Node): HTMLElement {
-  return h('div', { class: 'page-head' }, h('div', {}, h('h1', {}, title), h('p', { class: 'secondary' }, sub)), right ?? null)
+  return h('div', { class: 'page-head' }, h('div', {}, h('h1', {}, title), sub ? h('p', { class: 'secondary' }, sub) : null), right ?? null)
 }
 
 const levelIcon: Record<Level, IconName> = { good: 'check', warning: 'alert', critical: 'x', neutral: 'pause' }
@@ -58,7 +58,7 @@ function chip(level: Level, ic: IconName, name: string, word: string, meta: stri
 /** healthStrip is the four service states shown on top of the summary and the health page. */
 export function healthStrip(hl: Health, failed: { survey: number; report: number; game: number }, now = Date.now()): HTMLElement {
   const bot = botLevel(hl, now)
-  const botWord = bot === 'good' ? 'Online' : bot === 'neutral' ? 'Waiting' : 'Not heard from'
+  const botWord = bot === 'good' ? 'Online' : bot === 'neutral' ? 'Waiting' : 'Offline'
   const botMeta = hl.bot.last_seen ? `Last call ${ago(hl.bot.last_seen, now)}` : `No calls since the API started (${ago(hl.api.started_at, now)})`
 
   const hours = hl.api.hours
@@ -97,7 +97,7 @@ export function errorCard(err: unknown): HTMLElement {
       ? "The API doesn't accept the admin key. Check that this container's ADMIN_API_KEY matches the API's ADMIN_KEY_HASH."
       : status === 502 || status === 504
         ? "Can't reach the admin API. Check that the API has ADMIN_KEY_HASH set and that API_URL points to its admin port (http://api:8081 by default)."
-        : 'Something went wrong loading the data. Try again in a moment.'
+        : "Couldn't load the data. Try again."
   return h(
     'section',
     { class: 'card error-card', role: 'alert' },

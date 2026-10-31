@@ -38,15 +38,15 @@ export function overviewPage(o: Overview, hl: Health, guilds: Guild[], open: (id
   const pillOf = { idle: pill('warning', 'Idle'), left: pill('neutral', 'Removed'), failed: pill('critical', 'Failed DMs') }
 
   return [
-    pageHead('Overview', 'Every server with the bot, in aggregate numbers only.', updated),
+    pageHead('Overview', '', updated),
     healthStrip(hl, { survey: o.failed_7d.survey, report: o.failed_7d.report, game: o.failed_7d.game + o.failed_7d.game_guess }, now),
     h(
       'div',
       { class: 'kpis' },
-      kpi('Active servers', fmt(active), h('span', {}, h('span', { class: 'delta up' }, `+${fmt(o.guilds.new_7d)}`), ` this week · −${fmt(o.guilds.left_7d)} left`), o.weeks.length > 1 ? spark(o.weeks.map((w) => w.guilds ?? 0)) : undefined),
-      kpi('Idle (14 d)', fmt(o.guilds.idle), `of ${fmt(o.guilds.with_bot)} with the bot · ${fmt(o.guilds.left)} removed it`),
+      kpi('Active servers', fmt(active), h('span', {}, h('span', { class: 'delta up' }, `+${fmt(o.guilds.new_7d)}`), ` joined · −${fmt(o.guilds.left_7d)} left (7 d)`), o.weeks.length > 1 ? spark(o.weeks.map((w) => w.guilds ?? 0)) : undefined),
+      kpi('Idle (14 d)', fmt(o.guilds.idle), `of ${fmt(o.guilds.with_bot)} with the bot`),
       kpi('Response rate', rate === null ? '–' : unit(fmt(rate * 100), '%'), rateFoot, weeksWithRate.filter((r) => r !== null).length > 1 ? spark(weeksWithRate.map((r) => r ?? 0)) : undefined),
-      kpi('Active people (7 d)', fmt(o.people.active_7d), `of ${fmt(o.people.members)} members`),
+      kpi('Active (7 d)', fmt(o.people.active_7d), `of ${fmt(o.people.members)} members`),
     ),
     ...(o.phase0 ? [phase0Card(o.phase0)] : []),
     h(
@@ -65,12 +65,12 @@ export function overviewPage(o: Overview, hl: Health, guilds: Guild[], open: (id
         'Usage',
         'People, not servers',
         statList([
-          ['Active today', fmt(o.people.active_today)],
-          ['Active in 7 days', fmt(o.people.active_7d)],
-          ['Active in 30 days', fmt(o.people.active_30d)],
-          ['Coming back (3+ days in 7)', pctOrDash(ratio(o.people.repeat_7d, o.people.active_7d))],
-          ['Answers with a message', h('span', {}, pctOrDash(ratio(o.usage.with_message_7d, o.usage.answers_7d)), ' ', h('small', {}, '(the count only)'))],
-          ['Kudos this week', fmt(o.usage.kudos_7d)],
+          ['Active (today)', fmt(o.people.active_today)],
+          ['Active (7 d)', fmt(o.people.active_7d)],
+          ['Active (30 d)', fmt(o.people.active_30d)],
+          ['Answered 3+ of last 7 days', pctOrDash(ratio(o.people.repeat_7d, o.people.active_7d))],
+          ['With a comment (7 d)', pctOrDash(ratio(o.usage.with_message_7d, o.usage.answers_7d))],
+          ['Kudos (7 d)', fmt(o.usage.kudos_7d)],
           ['Game on', h('span', {}, fmt(o.usage.games_on), ' ', h('small', {}, 'servers'))],
           ['Game answers (7 d)', fmt(o.usage.game_answers_7d)],
           ['Proposed questions (7 d)', fmt(o.usage.proposals_7d)],
@@ -108,7 +108,7 @@ export function overviewPage(o: Overview, hl: Health, guilds: Guild[], open: (id
           'div',
           { class: 'legend' },
           legend('var(--cat-1)', 'Joined'),
-          legend('var(--cat-2)', 'Left (removed or deleted)'),
+          legend('var(--cat-2)', 'Left'),
         ),
         flowChart(
           o.weeks.map((w) => ({
@@ -140,7 +140,7 @@ export function overviewPage(o: Overview, hl: Health, guilds: Guild[], open: (id
               ),
             ),
           )
-        : h('p', { class: 'empty' }, 'All good: no idle or removed servers, and none losing many DMs.'),
+        : h('p', { class: 'empty' }, 'Nothing needs attention.'),
     ),
   ]
 }
@@ -150,8 +150,8 @@ function phase0Card(p: Phase0): HTMLElement {
   const fill = h('span', { class: 'goal-fill' })
   fill.style.width = `${Math.min(100, (p.active_guilds / PHASE0_ACTIVE_GOAL) * 100)}%`
   return card(
-    'Phase 0: is it worth charging?',
-    'Goal from the market study',
+    'Phase 0 goal',
+    'From the market study',
     h(
       'div',
       { class: 'grid-2' },
@@ -162,7 +162,7 @@ function phase0Card(p: Phase0): HTMLElement {
         h('span', { class: 'goal-track', role: 'progressbar', 'aria-valuemin': '0', 'aria-valuemax': String(PHASE0_ACTIVE_GOAL), 'aria-valuenow': String(p.active_guilds), 'aria-label': 'Active servers' }, fill),
         h('small', {}, '5 or more people answering in the last 7 days'),
       ),
-      statList([['Past the free plan (15+ people)', fmt(p.over_free)]]),
+      statList([['Over 15 people (free plan limit)', fmt(p.over_free)]]),
     ),
   )
 }

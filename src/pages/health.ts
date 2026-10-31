@@ -23,7 +23,7 @@ export function healthPage(hl: Health, updated: Node): Node[] {
   const db = hl.database
 
   return [
-    pageHead('Service health', 'Bot, API, database and backups.', updated),
+    pageHead('Service health', '', updated),
     healthStrip(hl, failed7, now),
     h(
       'div',
@@ -31,7 +31,7 @@ export function healthPage(hl: Health, updated: Node): Node[] {
       card(
         'API latency',
         'Last 24 hours, per hour',
-        h('div', { class: 'legend' }, legend('var(--cat-1)', 'p50 (half of the requests)'), legend('var(--cat-2)', 'p95')),
+        h('div', { class: 'legend' }, legend('var(--cat-1)', 'p50'), legend('var(--cat-2)', 'p95')),
         busy
           ? lineChart(
               hours.map((x) => x.hour),
@@ -54,7 +54,7 @@ export function healthPage(hl: Health, updated: Node): Node[] {
               },
             )
           : h('div', { class: 'chart-empty' }, 'No requests since the API started.'),
-        h('p', { class: 'small muted' }, `Counted in memory since the API started (${ago(hl.api.started_at, now)}). Peaks usually match the survey time.`),
+        h('p', { class: 'small muted' }, `Counted in memory since the API started (${ago(hl.api.started_at, now)}).`),
         tableView(['Hour', 'Requests', 'p50', 'p95', 'Errors'], hours.map((x) => [hourLabel(x.hour), fmt(x.requests), x.requests ? `${fmt(x.p50_ms, 1)} ms` : '–', x.requests ? `${fmt(x.p95_ms, 1)} ms` : '–', fmt(x.errors)])),
       ),
       card(
