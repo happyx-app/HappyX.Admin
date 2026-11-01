@@ -22,6 +22,8 @@ const names: Record<string, string> = {
   all: 'Everyone',
   except: 'All but some roles',
   only: 'Only some roles',
+  true: 'Yes',
+  false: 'No',
 }
 const named = (v: string) => names[v] ?? v
 
@@ -40,8 +42,8 @@ export function settingsPage(st: Settings, updated: Node): Node[] {
       { class: 'grid-2' },
       card('Language', null, distribution(top(st.language, 5, languageName), N)),
       card('Timezone', null, distribution(top(st.timezone, 5), N)),
-      card('Survey time', null, distribution(top(st.survey_hour, 5), N)),
-      card('Answers', null, distribution(top(st.anonymous, 2, named), N)),
+      card('Survey time', null, distribution(top(st.survey_hour, 5, (v) => `${v.padStart(2, '0')}:00`), N)),
+      card('Anonymity', null, distribution(top(st.anonymous, 2, (v) => (v === 'true' ? 'Anonymous' : v === 'false' ? 'Named' : named(v))), N)),
       card('Report frequency', null, distribution(top(st.report_frequency, 2, named), N)),
       card('Report DM to the admin', null, distribution(top(st.report_dm, 2, named), N)),
       card('Who gets the survey', null, distribution(top(st.survey_roles, 3, named), N)),

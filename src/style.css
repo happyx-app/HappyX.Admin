@@ -199,7 +199,7 @@ table.table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
 .servers-table tbody tr { cursor: pointer; }
 .servers-table tbody tr:hover td { background: var(--surface-2); }
 .srv { display: flex; align-items: center; gap: 10px; min-width: 0; }
-.srv-ico { width: 30px; height: 30px; border-radius: 9px; display: grid; place-items: center; font-weight: 700; font-size: 0.75rem; color: #fff; flex: none; }
+.srv-ico { width: 30px; height: 30px; border-radius: 9px; display: grid; place-items: center; font-weight: 700; font-size: 0.75rem; color: var(--ink); background: var(--series-soft); flex: none; }
 .srv-name { font-weight: 600; }
 .rate { display: inline-flex; align-items: center; gap: 8px; justify-content: flex-end; }
 .rate .track { width: 64px; height: 6px; background: var(--surface-2); border-radius: 4px; overflow: hidden; display: inline-block; }
@@ -281,3 +281,8 @@ h2 { font-weight: 800; font-size: 1.15rem; }
 .stat-row .v { font-weight: 800; font-size: 1.05rem; }
 .chart .line { stroke-width: 3; }
 .chart .area { opacity: 0.2; }
+@media (max-width: 560px) {
+  .health { grid-template-columns: 1fr 1fr; }
+  .hchip .meta { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .hchip > div { min-width: 0; }
+}
