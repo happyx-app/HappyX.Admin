@@ -86,7 +86,7 @@ export function healthPage(hl: Health, updated: Node): Node[] {
       { class: 'grid-2' },
       card(
         'Database and API',
-        `PostgreSQL ${db.version.split(' ')[0]}`,
+        `PostgreSQL ${db.version.replace(/^PostgreSQL\s*/i, '').split(' ')[0]}`,
         statList([
           ['Database size', bytes(db.size_bytes)],
           ['Largest table', db.largest_table ? `${db.largest_table} · ${bytes(db.largest_table_bytes)}` : '–'],

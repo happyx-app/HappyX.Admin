@@ -2,7 +2,7 @@
 
 import type { Guild, Health } from './api'
 import { h } from './dom'
-import { ago, backupLevel, botLevel, bytes, colorSlot, dateMedium, fmt, hourLabel, initials, type Level } from './format'
+import { ago, backupLevel, botLevel, bytes, dateMedium, fmt, hourLabel, initials, type Level } from './format'
 import { icon, type IconName } from './icons'
 
 type Child = Node | string | null | false | undefined
@@ -31,7 +31,6 @@ export function statusPill(g: Guild, now = Date.now()): HTMLElement {
 
 export function guildBadge(g: Guild): HTMLElement {
   const el = h('span', { class: 'srv-ico', 'aria-hidden': 'true' }, initials(g.name))
-  el.style.background = `var(--cat-${colorSlot(g.discord_guild_id)})`
   return el
 }
 
@@ -67,7 +66,8 @@ export function healthStrip(hl: Health, failed: { survey: number; report: number
   const apiMeta = `${lastBusy ? `p95 ${fmt(lastBusy.p95_ms)} ms at ${hourLabel(lastBusy.hour)}` : 'No requests yet'} · ${fmt(errors)} 5xx errors in 24 h`
 
   const totalFailed = failed.survey + failed.report + failed.game
-  const failMeta = `${fmt(failed.survey)} surveys · ${fmt(failed.report)} reports · ${fmt(failed.game)} game`
+  const n = (x: number, one: string, many: string) => `${fmt(x)} ${x === 1 ? one : many}`
+  const failMeta = `${n(failed.survey, 'survey', 'surveys')} · ${n(failed.report, 'report', 'reports')} · ${fmt(failed.game)} game`
 
   const bk = backupLevel(hl, now)
   const latest = hl.backups.files[0]
@@ -102,7 +102,8 @@ export function errorCard(err: unknown): HTMLElement {
     'section',
     { class: 'card error-card', role: 'alert' },
     h('div', { class: 'card-head' }, h('h2', {}, "Couldn't load the data")),
-    h('p', {}, hint),
+    status === 401 || status === 502 || status === 504 ? h('p', {}, hint) : null,
     h('pre', {}, String((err as Error)?.message ?? err)),
+    h('button', { class: 'btn btn-primary', type: 'button', onclick: () => dispatchEvent(new HashChangeEvent('hashchange')) }, 'Retry'),
   )
 }

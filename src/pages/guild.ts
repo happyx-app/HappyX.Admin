@@ -71,7 +71,7 @@ export function guildPage(d: GuildDetail, back: () => void): Node[] {
           ...(g.left_at ? ([['Removed', dateLong(g.left_at)]] as [string, string][]) : []),
           ...(g.purge_at ? ([['Deleted', dateLong(g.purge_at)]] as [string, string][]) : []),
           ['Last answer', g.last_answer ? dayLong(g.last_answer) : '–'],
-          ['Last report', d.last_report ? `for ${dayLong(d.last_report)}` : '–'],
+          ['Last report', d.last_report ? dayLong(d.last_report) : '–'],
           ['Kudos (7 d)', fmt(d.kudos_7d)],
           ['With a comment (30 d)', h('span', {}, pctOrDash(ratio(d.with_message_30d, d.answers_30d)), ' ', h('small', {}, `of ${fmt(d.answers_30d)}`))],
           ['Game answers (7 d)', fmt(d.game_answers_7d)],

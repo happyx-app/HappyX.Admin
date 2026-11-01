@@ -81,7 +81,7 @@ export function guildsPage(guilds: Guild[], open: (id: string) => void, updated:
           h('td', {}, h('span', { class: 'srv' }, guildBadge(g), h('span', { class: 'srv-name', title: g.name }, g.name))),
           h('td', { class: 'num' }, fmt(g.members)),
           h('td', { class: 'num' }, g.status === 'left' ? '–' : fmt(g.active_7d)),
-          h('td', { class: 'num' }, rate === null ? '–' : h('span', { class: 'rate' }, pct(rate), h('span', { class: 'track' }, fill))),
+          h('td', { class: 'num' }, rate === null || g.status === 'left' ? '–' : h('span', { class: 'rate' }, pct(rate), h('span', { class: 'track' }, fill))),
           h('td', {}, dateMedium(g.created_at)),
           h('td', {}, statusPill(g)),
         )
